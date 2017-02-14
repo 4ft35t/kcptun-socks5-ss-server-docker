@@ -4,21 +4,19 @@ MAINTAINER cnDocker
 # 替换阿里云源
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/' /etc/apk/repositories
 
-ENV SS_DIR=shadowsocks-libev \
-    CONF_DIR="/usr/local/conf" \
+ENV CONF_DIR="/usr/local/conf" \
     KCPTUN_DIR=/usr/local/kcp-server
 
 RUN set -ex && \
     apk add --no-cache  --virtual TMP autoconf build-base curl libtool linux-headers openssl-dev pcre-dev && \
-    SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases | grep -Eo '/shadowsocks.+archive.+tar.gz' | head -1` \
-    KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` \
-    apk add --no-cache pcre bash && \
+    SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases | grep -Eo '/shadowsocks.+archive.+tar.gz' | head -1` && \
+    KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` && \
     curl -sSL ${SS_URL} | tar xz && \
-    cd ${SS_DIR} && \
+    cd  shadowsocks-libev* && \
     ./configure --disable-documentation && \
     make install && \
     cd .. && \
-    rm -rf $SS_DIR && \
+    rm -rf shadowsocks-libev* && \
     [ ! -d ${CONF_DIR} ] && mkdir -p ${CONF_DIR} && \
     [ ! -d ${KCPTUN_DIR} ] && mkdir -p ${KCPTUN_DIR} && cd ${KCPTUN_DIR} && \
     curl -sSL ${KCP_URL} | tar xz && \
