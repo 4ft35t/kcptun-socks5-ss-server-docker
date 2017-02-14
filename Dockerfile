@@ -8,7 +8,7 @@ ENV CONF_DIR="/usr/local/conf" \
     KCPTUN_DIR=/usr/local/kcp-server
 
 RUN set -ex && \
-    apk add --no-cache  --virtual TMP autoconf build-base curl libtool linux-headers openssl-dev pcre-dev && \
+    apk add --no-cache  --virtual TMP autoconf automake build-base curl libtool linux-headers openssl-dev pcre-dev && \
     SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases | grep -Eo '/shadowsocks.+archive.+tar.gz' | head -1` && \
     KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` && \
     curl -sSL ${SS_URL} | tar xz && \
