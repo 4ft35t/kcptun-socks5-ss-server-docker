@@ -116,15 +116,7 @@ if [[ "${RUNENV}" =~ ^[Kk][Cc][Pp][Tt][Uu][Nn][Ss][Oo][Cc][Kk][Ss]-[Kk][Cc][Pp][
     echo "+---------------------------------------------------------+"
     echo "KCP Port     : ${KCPTUN_SS_LISTEN}"
     echo "KCP Parameter: --crypt ${KCPTUN_CRYPT} --key ${KCPTUN_KEY} --mtu ${KCPTUN_MTU} --sndwnd ${KCPTUN_RCVWND} --rcvwnd ${KCPTUN_SNDWND} --mode ${KCPTUN_MODE}${kcptun_nocomp_flag}"
-    echo "+---------------------------------------------------------+"
-    echo "Starting socks5..."
-    nohup socks5 127.0.0.1:${KCPTUN_SOCKS5_PORT}  >/dev/null 2>&1 &
-    sleep 0.3
-    echo "Socks5 (pid `pidof socks5`)is running."
-    netstat -ntlup | grep socks5
-    echo "Starting Kcptun for socks5..."
-    kcp-server -v
-    exec "kcp-server" -c ${KCPTUN_CONF}
+    kcp-server
 # kcptunsocks
 elif [[ "${RUNENV}" =~ ^[Kk][Cc][Pp][Tt][Uu][Nn][Ss][Oo][Cc][Kk][Ss]$ ]]; then
     echo "Starting socks5..."

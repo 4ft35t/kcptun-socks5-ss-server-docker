@@ -30,6 +30,7 @@ RUN set -ex && \
     make install && \
     cd .. && \
 
+    cd /tmp && \
     KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` && \
     [ ! -d ${CONF_DIR} ] && mkdir -p ${CONF_DIR} && \
     curl -sSL ${KCP_URL} | tar xz && \
@@ -49,4 +50,3 @@ RUN set -ex && \
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
-
