@@ -13,7 +13,7 @@ RUN set -ex && \
     KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` && \
     curl -sSL ${SS_URL} | tar xz && \
     cd  shadowsocks-libev* && \
-    ./configure --disable-documentation && \
+    ./autogen.sh && ./configure --disable-documentation && \
     make install && \
     cd .. && \
     rm -rf shadowsocks-libev* && \
