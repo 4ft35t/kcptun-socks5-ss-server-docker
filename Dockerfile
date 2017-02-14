@@ -13,15 +13,15 @@ RUN set -ex && \
     SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases | grep -Eo '/shadowsocks.+archive.+tar.gz' | head -1` \
     KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` \
     apk add --no-cache pcre bash && \
-    curl -sSL $SS_URL | tar xz && \
-    cd $SS_DIR && \
+    curl -sSL ${SS_URL} | tar xz && \
+    cd ${SS_DIR} && \
     ./configure --disable-documentation && \
     make install && \
     cd .. && \
     rm -rf $SS_DIR && \
     [ ! -d ${CONF_DIR} ] && mkdir -p ${CONF_DIR} && \
     [ ! -d ${KCPTUN_DIR} ] && mkdir -p ${KCPTUN_DIR} && cd ${KCPTUN_DIR} && \
-    curl -sSL $KCP_URL | tar xz && \
+    curl -sSL ${KCP_URL} | tar xz && \
     mv ${KCPTUN_DIR}/server_linux_amd64 ${KCPTUN_DIR}/kcp-server && \
     rm -f ${KCPTUN_DIR}/client_linux_amd64 ${KCPTUN_DIR}/${kcptun_latest_filename} && \
     chown root:root ${KCPTUN_DIR}/* && \
