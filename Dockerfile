@@ -8,7 +8,7 @@ ENV CONF_DIR="/usr/local/conf" \
     KCPTUN_DIR=/usr/local/kcp-server
 
 RUN set -ex && \
-    apk add --no-cache  --virtual TMP autoconf automake build-base curl libtool linux-headers udns-dev libsodium-dev mbedtls-dev pcre-dev udns-dev git && \
+    apk add --no-cache  --virtual TMP autoconf automake build-base curl libev-dev libtool linux-headers udns-dev libsodium-dev mbedtls-dev pcre-dev udns-dev git && \
     KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` && \
     git clone https://github.com/shadowsocks/shadowsocks-libev.git && \
     cd shadowsocks-libev && \
@@ -21,7 +21,7 @@ RUN set -ex && \
     [ ! -d ${KCPTUN_DIR} ] && mkdir -p ${KCPTUN_DIR} && cd ${KCPTUN_DIR} && \
     curl -sSL ${KCP_URL} | tar xz && \
     mv ${KCPTUN_DIR}/server_linux_amd64 ${KCPTUN_DIR}/kcp-server && \
-    rm -f ${KCPTUN_DIR}/client_linux_amd64 ${KCPTUN_DIR}/${kcptun_latest_filename} && \
+    rm -f ${KCPTUN_DIR}/client_linux_amd64 && \
     chown root:root ${KCPTUN_DIR}/* && \
     chmod 755 ${KCPTUN_DIR}/* && \
     ln -s ${KCPTUN_DIR}/* /bin/ && \
