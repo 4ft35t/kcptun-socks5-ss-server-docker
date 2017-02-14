@@ -4,10 +4,10 @@ MAINTAINER cnDocker
 # 替换阿里云源
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/' /etc/apk/repositories
 
-ENV SS_URL=https://github.com/shadowsocks/shadowsocks-libev/archive/v2.6.3.tar.gz \
-    SS_DIR=shadowsocks-libev-2.6.3 \
+ENV SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases | grep -Eo '/shadowsocks.+archive.+tar.gz' | head -1` \
+    SS_DIR=shadowsocks-libev \
     CONF_DIR="/usr/local/conf" \
-    kcptun_latest="https://github.com/xtaci/kcptun/releases/latest" \
+    KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` \
     KCPTUN_DIR=/usr/local/kcp-server
 
 RUN set -ex && \
@@ -21,11 +21,7 @@ RUN set -ex && \
     rm -rf $SS_DIR && \
     [ ! -d ${CONF_DIR} ] && mkdir -p ${CONF_DIR} && \
     [ ! -d ${KCPTUN_DIR} ] && mkdir -p ${KCPTUN_DIR} && cd ${KCPTUN_DIR} && \
-    kcptun_latest_release=`curl -s ${kcptun_latest} | cut -d\" -f2` && \
-    kcptun_latest_download=`curl -s ${kcptun_latest} | cut -d\" -f2 | sed 's/tag/download/'` && \
-    kcptun_latest_filename=`curl -s ${kcptun_latest_release} | sed -n '/<strong>kcptun-linux-amd64/p' | cut -d">" -f2 | cut -d "<" -f1` && \
-    wget ${kcptun_latest_download}/${kcptun_latest_filename} -O ${KCPTUN_DIR}/${kcptun_latest_filename} && \
-    tar xzf ${KCPTUN_DIR}/${kcptun_latest_filename} -C ${KCPTUN_DIR}/ && \
+    curl -sSL $KCP_URL | tar xz && \
     mv ${KCPTUN_DIR}/server_linux_amd64 ${KCPTUN_DIR}/kcp-server && \
     rm -f ${KCPTUN_DIR}/client_linux_amd64 ${KCPTUN_DIR}/${kcptun_latest_filename} && \
     chown root:root ${KCPTUN_DIR}/* && \
