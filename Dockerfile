@@ -4,13 +4,13 @@ MAINTAINER cnDocker
 # 替换阿里云源
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/' /etc/apk/repositories
 
-ENV SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases | grep -Eo '/shadowsocks.+archive.+tar.gz' | head -1` \
-    SS_DIR=shadowsocks-libev \
+ENV SS_DIR=shadowsocks-libev \
     CONF_DIR="/usr/local/conf" \
-    KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` \
     KCPTUN_DIR=/usr/local/kcp-server
 
 RUN set -ex && \
+    SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases | grep -Eo '/shadowsocks.+archive.+tar.gz' | head -1` \
+    KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` \
     apk add --no-cache pcre bash && \
     apk add --no-cache  --virtual TMP autoconf build-base wget curl libtool linux-headers openssl-dev pcre-dev && \
     curl -sSL $SS_URL | tar xz && \
