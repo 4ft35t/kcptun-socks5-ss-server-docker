@@ -9,10 +9,10 @@ ENV SS_DIR=shadowsocks-libev \
     KCPTUN_DIR=/usr/local/kcp-server
 
 RUN set -ex && \
+    apk add --no-cache  --virtual TMP autoconf build-base curl libtool linux-headers openssl-dev pcre-dev && \
     SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases | grep -Eo '/shadowsocks.+archive.+tar.gz' | head -1` \
     KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` \
     apk add --no-cache pcre bash && \
-    apk add --no-cache  --virtual TMP autoconf build-base wget curl libtool linux-headers openssl-dev pcre-dev && \
     curl -sSL $SS_URL | tar xz && \
     cd $SS_DIR && \
     ./configure --disable-documentation && \
