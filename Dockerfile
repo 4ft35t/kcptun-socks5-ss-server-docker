@@ -4,32 +4,50 @@ MAINTAINER cnDocker
 # 替换阿里云源
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/' /etc/apk/repositories
 
-ENV CONF_DIR="/usr/local/conf" \
-    KCPTUN_DIR=/usr/local/kcp-server
+ARG SS_VER=3.0.2
+ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VER/shadowsocks-libev-$SS_VER.tar.gz
+
+ENV CONF_DIR="/usr/local/conf"
 
 RUN set -ex && \
-    apk add --no-cache  --virtual TMP autoconf automake build-base curl libev-dev libtool linux-headers udns-dev libsodium-dev mbedtls-dev pcre-dev udns-dev git && \
-    KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` && \
-    git clone https://github.com/shadowsocks/shadowsocks-libev.git && \
-    cd shadowsocks-libev && \
-    git submodule update --init --recursive && \
-    ./autogen.sh && ./configure --disable-documentation && \
+    apk add --no-cache --virtual .build-deps \
+                                autoconf \
+                                build-base \
+                                curl \
+                                libev-dev \
+                                libtool \
+                                linux-headers \
+                                udns-dev \
+                                libsodium-dev \
+                                mbedtls-dev \
+                                pcre-dev \
+                                tar \
+                                udns-dev && \
+
+    cd /tmp && \
+    curl -sSL $SS_URL | tar xz --strip 1 && \
+    ./configure --prefix=/usr --disable-documentation && \
     make install && \
     cd .. && \
-    rm -rf shadowsocks-libev && \
+
+    KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` && \
     [ ! -d ${CONF_DIR} ] && mkdir -p ${CONF_DIR} && \
-    [ ! -d ${KCPTUN_DIR} ] && mkdir -p ${KCPTUN_DIR} && cd ${KCPTUN_DIR} && \
     curl -sSL ${KCP_URL} | tar xz && \
-    mv ${KCPTUN_DIR}/server_linux_amd64 ${KCPTUN_DIR}/kcp-server && \
-    rm -f ${KCPTUN_DIR}/client_linux_amd64 && \
-    chown root:root ${KCPTUN_DIR}/* && \
-    chmod 755 ${KCPTUN_DIR}/* && \
-    ln -s ${KCPTUN_DIR}/* /bin/ && \
-    apk --no-cache del --virtual TMP && \
-    apk --no-cache del build-base autoconf && \
-    rm -rf /var/cache/apk/* ~/.cache /tmp/libsodium
+    mv server_linux_amd64 /usr/bin/kcp-server && \
+
+    runDeps="$( \
+        scanelf --needed --nobanner /usr/bin/ss-* \
+            | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+            | xargs -r apk info --installed \
+            | sort -u \
+    )" && \
+
+    apk add --no-cache --virtual .run-deps bash $runDeps && \
+    apk del .build-deps && \
+    rm -rf shadowsocks-libev /tmp/* 
 
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+# ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/entrypoint.sh"]
 
