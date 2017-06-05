@@ -1,6 +1,6 @@
 # kcp-server & shadowsocks-libev for Dockerfile
 FROM alpine:latest
-MAINTAINER cnDocker
+# MAINTAINER cnDocker
 
 ARG SS_VER=3.0.6
 ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VER/shadowsocks-libev-$SS_VER.tar.gz
@@ -28,12 +28,6 @@ RUN set -ex && \
     make install && \
     cd .. && \
 
-    cd /tmp && \
-    KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` && \
-    [ ! -d ${CONF_DIR} ] && mkdir -p ${CONF_DIR} && \
-    curl -sSL ${KCP_URL} | tar xz && \
-    mv server_linux_amd64 /usr/bin/kcp-server && \
-
     runDeps="$( \
         scanelf --needed --nobanner /usr/bin/ss-* \
             | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
@@ -45,6 +39,6 @@ RUN set -ex && \
     apk del .build-deps && \
     rm -rf shadowsocks-libev /tmp/* 
 
-ADD entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+# ADD entrypoint.sh /entrypoint.sh
+# RUN chmod +x /entrypoint.sh
+# ENTRYPOINT ["/entrypoint.sh"]
