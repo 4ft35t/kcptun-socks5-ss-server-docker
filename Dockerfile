@@ -1,10 +1,8 @@
 # kcp-server & shadowsocks-libev for Dockerfile
 FROM alpine:latest
 MAINTAINER cnDocker
-# 替换阿里云源
-#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/' /etc/apk/repositories
 
-ARG SS_VER=3.0.2
+ARG SS_VER=3.0.6
 ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VER/shadowsocks-libev-$SS_VER.tar.gz
 
 ENV CONF_DIR="/usr/local/conf"
