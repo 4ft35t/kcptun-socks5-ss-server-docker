@@ -74,7 +74,7 @@ cndocker/kcptun-socks5-ss-server:latest
 ```
 ---
 
-##变量说明（变量名区分大小写）
+## 变量说明（变量名区分大小写）
 
 
 | 变量名 | 默认值  | 描述 |
