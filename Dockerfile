@@ -2,8 +2,7 @@
 FROM alpine:latest
 MAINTAINER cnDocker
 
-ARG SS_VER=3.0.6
-ARG SS_URL=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VER/shadowsocks-libev-$SS_VER.tar.gz
+ARG SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases/latest -L |grep -Eo "/shadowsocks/shadowsocks-libev/release.*?.tar.gz"`
 
 ENV CONF_DIR="/usr/local/conf"
 
