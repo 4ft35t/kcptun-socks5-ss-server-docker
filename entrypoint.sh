@@ -29,7 +29,6 @@ KCPTUN_MODE=${KCPTUN_MODE:-fast2}                             #"mode": "fast2",
 {
     "server":"${SS_SERVER_ADDR}",
     "server_port":${SS_SERVER_PORT},
-    "local_address":"127.0.0.1",
     "local_port":1080,
     "password":"${SS_PASSWORD}",
     "timeout":${SS_TIMEOUT},
