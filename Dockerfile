@@ -12,7 +12,7 @@ RUN set -ex && \
                                 libev-dev \
                                 libtool \
                                 linux-headers \
-                                udns-dev \
+                                c-ares-dev \
                                 libsodium-dev \
                                 mbedtls-dev \
                                 pcre-dev \
