@@ -2,8 +2,6 @@
 FROM alpine:latest
 MAINTAINER cnDocker
 
-ARG SS_URL="https://github.com$(curl https://github.com/shadowsocks/shadowsocks-libev/releases/latest -L |grep -Eo '/shadowsocks/shadowsocks-libev/release.*?.tar.gz')"
-
 ENV CONF_DIR="/usr/local/conf"
 
 RUN set -ex && \
@@ -22,6 +20,7 @@ RUN set -ex && \
                                 udns-dev && \
 
     cd /tmp && \
+    SS_URL="https://github.com$(curl https://github.com/shadowsocks/shadowsocks-libev/releases/latest -L |grep -Eo '/shadowsocks/shadowsocks-libev/release.*?.tar.gz')" \
     curl -sSL $SS_URL | tar xz --strip 1 && \
     ./configure --prefix=/usr --disable-documentation && \
     make install && \
