@@ -4,6 +4,7 @@ MAINTAINER cnDocker
 
 ENV CONF_DIR="/usr/local/conf"
 
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 RUN set -ex && \
     apk add --no-cache --virtual .run-deps \
                                 curl \
