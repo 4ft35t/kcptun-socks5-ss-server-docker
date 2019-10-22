@@ -43,7 +43,7 @@ EOF
     "target": "127.0.0.1:${KCPTUN_SOCKS5_PORT}",
     "key": "${KCPTUN_KEY}",
     "crypt": "${KCPTUN_CRYPT}",
-    "mode": "${KCPTUN_MODE}",
+    "mode": "${KCPTUN_MODE}"
 }
 EOF
 [ ! -f ${KCPTUN_SS_CONF} ] && cat > ${KCPTUN_SS_CONF}<<-EOF
@@ -52,7 +52,7 @@ EOF
     "target": "127.0.0.1:${SS_SERVER_PORT}",
     "key": "${KCPTUN_KEY}",
     "crypt": "${KCPTUN_CRYPT}",
-    "mode": "${KCPTUN_MODE}",
+    "mode": "${KCPTUN_MODE}"
 }
 EOF
 
