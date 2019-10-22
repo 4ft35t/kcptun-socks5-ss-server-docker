@@ -89,8 +89,8 @@ cndocker/kcptun-socks5-ss-server:latest
 | SS_UDP             | true                 | 开启SS服务器 UDP relay                |
 | SS_ONETIME_AUTH    | true                 | 开启SS服务器 onetime authentication.  |
 | SS_FAST_OPEN       | true                 | 开启SS服务器  TCP fast open.          |
-| KCPTUN_LISTEN      | 45678                | kcptunsocks模式提供服务的端口，UDP协议   |
-| KCPTUN_SS_LISTEN   | 34567                | kcptunss模式提供服务的端口，UDP协议           |
+| KCPTUN_LISTEN      | 4441                 | kcptunsocks模式提供服务的端口，UDP协议   |
+| KCPTUN_SS_LISTEN   | 4442                 | kcptunss模式提供服务的端口，UDP协议           |
 | KCPTUN_SOCKS5_PORT | 12948                | socks5透明代理端口，不需要对外开放。      |
 | KCPTUN_KEY         | password             | 服务密码                              |
 | KCPTUN_CRYPT       | aes                  | 加密方式，可选参数：aes, aes-128, aes-192, salsa20, blowfish, twofish, cast5, 3des, tea, xtea, xor |
