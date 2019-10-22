@@ -2,7 +2,7 @@
 FROM alpine:latest
 MAINTAINER cnDocker
 
-ARG SS_URL="https://github.com"`curl https://github.com/shadowsocks/shadowsocks-libev/releases/latest -L |grep -Eo "/shadowsocks/shadowsocks-libev/release.*?.tar.gz"`
+ARG SS_URL="https://github.com$(curl https://github.com/shadowsocks/shadowsocks-libev/releases/latest -L |grep -Eo '/shadowsocks/shadowsocks-libev/release.*?.tar.gz')"
 
 ENV CONF_DIR="/usr/local/conf"
 
@@ -28,7 +28,7 @@ RUN set -ex && \
     cd .. && \
 
     cd /tmp && \
-    KCP_URL="https://github.com/"`curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1` && \
+    KCP_URL="https://github.com/$(curl https://github.com/xtaci/kcptun/releases/latest -L | grep -Eo '/xtaci.+linux-amd64.+tar.gz' | head -1)" && \
     [ ! -d ${CONF_DIR} ] && mkdir -p ${CONF_DIR} && \
     curl -sSL ${KCP_URL} | tar xz && \
     mv server_linux_amd64 /usr/bin/kcp-server && \
