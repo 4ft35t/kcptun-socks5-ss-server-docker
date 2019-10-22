@@ -8,6 +8,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposit
 
 RUN set -ex && \
     apk add --no-cache --virtual .build-deps \
+                                curl \
                                 tar \
                                 shadowsocks-libev && \
 
