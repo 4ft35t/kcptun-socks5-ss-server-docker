@@ -4,6 +4,8 @@ MAINTAINER cnDocker
 
 ENV CONF_DIR="/usr/local/conf"
 
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+
 RUN set -ex && \
     apk add --no-cache --virtual .build-deps \
                                 tar \
@@ -15,16 +17,8 @@ RUN set -ex && \
     curl -sSL ${KCP_URL} | tar xz && \
     mv server_linux_amd64 /usr/bin/kcp-server && \
 
-    runDeps="$( \
-        scanelf --needed --nobanner /usr/bin/ss-* \
-            | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-            | xargs -r apk info --installed \
-            | sort -u \
-    )" && \
-
-    apk add --no-cache --virtual .run-deps bash $runDeps && \
     apk del .build-deps && \
-    rm -rf shadowsocks-libev /tmp/*
+    rm -rf /tmp/*
 
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
