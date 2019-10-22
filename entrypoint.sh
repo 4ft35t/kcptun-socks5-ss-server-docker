@@ -6,7 +6,7 @@
 #########################################################################
 
 set -e
-RUNENV=${RUNENV:-kcptunsocks-kcptunss}                        #"RUNENV": kcptunsocks-kcptunss, kcptunsocks, kcptunss, ss
+RUNENV=${RUNENV:-kcptunss}                        #"RUNENV": kcptunsocks-kcptunss, kcptunsocks, kcptunss, ss
 KCPTUN_CONF="/usr/local/conf/kcptun_config.json"
 KCPTUN_SS_CONF="/usr/local/conf/kcptun_ss_config.json"
 SS_CONF="/usr/local/conf/ss_config.json"
@@ -16,21 +16,14 @@ SS_SERVER_PORT=${SS_SERVER_PORT:-8388}                        #"server_port": 83
 SS_PASSWORD=${SS_PASSWORD:-password}                          #"password":"password",
 SS_METHOD=${SS_METHOD:-aes-256-cfb}                           #"method":"aes-256-cfb",
 SS_TIMEOUT=${SS_TIMEOUT:-600}                                 #"timeout":600,
-SS_DNS_ADDR=${SS_DNS_ADDR:-8.8.8.8}                           #-d "8.8.8.8",
-SS_UDP=${SS_UDP:-true}                                        #-u support,
-SS_ONETIME_AUTH=${SS_ONETIME_AUTH:-false}                     #-A support,
-SS_FAST_OPEN=${SS_FAST_OPEN:-true}                            #--fast-open support,
+SS_DNS_ADDR=${SS_DNS_ADDR:-1.1.1.1}                           #-d "8.8.8.8",
 # ======= KCPTUN CONFIG ======
 KCPTUN_LISTEN=${KCPTUN_LISTEN:-4441}                         #"listen": ":45678",
 KCPTUN_SS_LISTEN=${KCPTUN_SS_LISTEN:-4442}                   #"listen": ":45678", kcptun for ss listen port
 KCPTUN_SOCKS5_PORT=${KCPTUN_SOCKS5_PORT:-12948}               #"socks_port": 12948,
 KCPTUN_KEY=${KCPTUN_KEY:-password}                            #"key": "password",
-KCPTUN_CRYPT=${KCPTUN_CRYPT:-salsa20}                         #"crypt": "salsa20",
+KCPTUN_CRYPT=${KCPTUN_CRYPT:-aes}                         #"crypt": "salsa20",
 KCPTUN_MODE=${KCPTUN_MODE:-fast2}                             #"mode": "fast2",
-KCPTUN_MTU=${KCPTUN_MTU:-1400}                                #"mtu": 1400,
-KCPTUN_SNDWND=${KCPTUN_SNDWND:-2048}                          #"sndwnd": 2048,
-KCPTUN_RCVWND=${KCPTUN_RCVWND:-2048}                          #"rcvwnd": 2048,
-KCPTUN_NOCOMP=${KCPTUN_NOCOMP:-false}                         #"nocomp": false
 
 [ ! -f ${SS_CONF} ] && cat > ${SS_CONF}<<-EOF
 {
@@ -43,21 +36,6 @@ KCPTUN_NOCOMP=${KCPTUN_NOCOMP:-false}                         #"nocomp": false
     "method":"${SS_METHOD}"
 }
 EOF
-if [[ "${SS_UDP}" =~ ^[Tt][Rr][Uu][Ee]|[Yy][Ee][Ss]|1|[Ee][Nn][Aa][Bb][Ll][Ee]$ ]]; then
-    SS_UDP_FLAG="-u "
-else
-    SS_UDP_FLAG=""
-fi
-if [[ "${SS_ONETIME_AUTH}" =~ ^[Tt][Rr][Uu][Ee]|[Yy][Ee][Ss]|1|[Ee][Nn][Aa][Bb][Ll][Ee]$ ]]; then
-    SS_ONETIME_AUTH_FLAG="-A "
-else
-    SS_ONETIME_AUTH_FLAG=""
-fi
-if [[ "${SS_FAST_OPEN}" =~ ^[Tt][Rr][Uu][Ee]|[Yy][Ee][Ss]|1|[Ee][Nn][Aa][Bb][Ll][Ee]$ ]]; then
-    SS_FAST_OPEN_FLAG="--fast-open"
-else
-    SS_FAST_OPEN_FLAG=""
-fi
 
 [ ! -f ${KCPTUN_CONF} ] && cat > ${KCPTUN_CONF}<<-EOF
 {
@@ -66,11 +44,6 @@ fi
     "key": "${KCPTUN_KEY}",
     "crypt": "${KCPTUN_CRYPT}",
     "mode": "${KCPTUN_MODE}",
-    "mtu": ${KCPTUN_MTU},
-    "sndwnd": ${KCPTUN_SNDWND},
-    "rcvwnd": ${KCPTUN_RCVWND},
-    "nocomp": false,
-    "dscp": 46
 }
 EOF
 [ ! -f ${KCPTUN_SS_CONF} ] && cat > ${KCPTUN_SS_CONF}<<-EOF
@@ -80,18 +53,8 @@ EOF
     "key": "${KCPTUN_KEY}",
     "crypt": "${KCPTUN_CRYPT}",
     "mode": "${KCPTUN_MODE}",
-    "mtu": ${KCPTUN_MTU},
-    "sndwnd": ${KCPTUN_SNDWND},
-    "rcvwnd": ${KCPTUN_RCVWND},
-    "nocomp": false
 }
 EOF
-
-kcptun_nocomp_flag=""
-if [[ "${KCPTUN_NOCOMP}" =~ ^[Tt][Rr][Uu][Ee]|[Yy][Ee][Ss]|[Yy]|1|[Ee][Nn][Aa][Bb][Ll][Ee]$ ]]; then
-    sed -ri "s/(\"nocomp\":).*/\1 true/" ${KCPTUN_CONF}
-    kcptun_nocomp_flag=" --nocomp"
-fi
 
 echo "+---------------------------------------------------------+"
 echo "|   Manager for Kcptun-Socks5 & Kcptun-Shadowsocks-libev  |"
@@ -104,7 +67,7 @@ echo ""
 # kcptunsocks-kcptunss
 if [[ "${RUNENV}" =~ ^[Kk][Cc][Pp][Tt][Uu][Nn][Ss][Oo][Cc][Kk][Ss]-[Kk][Cc][Pp][Tt][Uu][Nn][Ss][Ss]$ ]]; then
     echo "Starting Shadowsocks-libev..."
-    nohup ss-server -c ${SS_CONF} -d "${SS_DNS_ADDR}" ${SS_UDP_FLAG}${SS_ONETIME_AUTH_FLAG}${SS_FAST_OPEN_FLAG} >/dev/null 2>&1 &
+    nohup ss-server -c ${SS_CONF} -d "${SS_DNS_ADDR}" >/dev/null 2>&1 &
     sleep 0.3
     echo "ss-server (pid `pidof ss-server`)is running."
     netstat -ntlup | grep ss-server
@@ -115,7 +78,7 @@ if [[ "${RUNENV}" =~ ^[Kk][Cc][Pp][Tt][Uu][Nn][Ss][Oo][Cc][Kk][Ss]-[Kk][Cc][Pp][
     netstat -ntlup | grep kcp-server
     echo "+---------------------------------------------------------+"
     echo "KCP Port     : ${KCPTUN_SS_LISTEN}"
-    echo "KCP Parameter: --crypt ${KCPTUN_CRYPT} --key ${KCPTUN_KEY} --mtu ${KCPTUN_MTU} --sndwnd ${KCPTUN_RCVWND} --rcvwnd ${KCPTUN_SNDWND} --mode ${KCPTUN_MODE}${kcptun_nocomp_flag}"
+    echo "KCP Parameter: --crypt ${KCPTUN_CRYPT} --key ${KCPTUN_KEY} --mode ${KCPTUN_MODE}"
     kcp-server
 # kcptunsocks
 elif [[ "${RUNENV}" =~ ^[Kk][Cc][Pp][Tt][Uu][Nn][Ss][Oo][Cc][Kk][Ss]$ ]]; then
@@ -130,7 +93,7 @@ elif [[ "${RUNENV}" =~ ^[Kk][Cc][Pp][Tt][Uu][Nn][Ss][Oo][Cc][Kk][Ss]$ ]]; then
 # kcptunss
 elif [[ "${RUNENV}" =~ ^[Kk][Cc][Pp][Tt][Uu][Nn][Ss][Ss]$ ]]; then
     echo "Starting Shadowsocks-libev..."
-    nohup ss-server -c ${SS_CONF} -d "${SS_DNS_ADDR}" ${SS_UDP_FLAG}${SS_ONETIME_AUTH_FLAG}${SS_FAST_OPEN_FLAG} >/dev/null 2>&1 &
+    nohup ss-server -c ${SS_CONF} -d "${SS_DNS_ADDR}" >/dev/null 2>&1 &
     sleep 0.3
     echo "ss-server (pid `pidof ss-server`)is running."
     netstat -ntlup | grep ss-server
@@ -138,13 +101,13 @@ elif [[ "${RUNENV}" =~ ^[Kk][Cc][Pp][Tt][Uu][Nn][Ss][Ss]$ ]]; then
     kcp-server -v
     echo "+---------------------------------------------------------+"
     echo "KCP Port     : ${KCPTUN_SS_LISTEN}"
-    echo "KCP Parameter: --crypt ${KCPTUN_CRYPT} --key ${KCPTUN_KEY} --mtu ${KCPTUN_MTU} --sndwnd ${KCPTUN_RCVWND} --rcvwnd ${KCPTUN_SNDWND} --mode ${KCPTUN_MODE}${kcptun_nocomp_flag}"
+    echo "KCP Parameter: --crypt ${KCPTUN_CRYPT} --key ${KCPTUN_KEY} --mode ${KCPTUN_MODE}"
     echo "+---------------------------------------------------------+"
     exec "kcp-server" -c ${KCPTUN_SS_CONF}
 # ss
 elif [[ "${RUNENV}" =~ ^[Ss][Ss]$ ]]; then
     echo "Starting Shadowsocks-libev..."
-    exec "ss-server" -c ${SS_CONF} -d "${SS_DNS_ADDR}" ${SS_UDP_FLAG}${SS_ONETIME_AUTH_FLAG}${SS_FAST_OPEN_FLAG}
+    exec "ss-server" -c ${SS_CONF} -d "${SS_DNS_ADDR}"
 else
     echo "RUNENV is ${RUNENV} setting error, start failed!"
 fi
